@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import parsers, viewsets
 
 from .models import Book, Category, Partner, TeamMember
 from .serializers import (
@@ -15,8 +15,9 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ["name"]
 
 
-class BookViewSet(viewsets.ReadOnlyModelViewSet):
+class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser)
 
     def get_queryset(self):
         qs = Book.objects.select_related("category").all()
@@ -26,11 +27,13 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         return qs.order_by("-created_at")
 
 
-class PartnerViewSet(viewsets.ReadOnlyModelViewSet):
+class PartnerViewSet(viewsets.ModelViewSet):
     queryset = Partner.objects.all().order_by("name")
     serializer_class = PartnerSerializer
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser)
 
 
-class TeamMemberViewSet(viewsets.ReadOnlyModelViewSet):
+class TeamMemberViewSet(viewsets.ModelViewSet):
     queryset = TeamMember.objects.all().order_by("name")
     serializer_class = TeamMemberSerializer
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser)
