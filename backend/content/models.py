@@ -30,7 +30,8 @@ class Book(TimeStampedModel):
     author = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     content = models.TextField(blank=True, null=True)
-    cover_image = models.URLField(blank=True, null=True)
+    cover_image = models.ImageField(upload_to="books/", blank=True, null=True)
+    legacy_cover_image_url = models.URLField(blank=True, null=True, help_text="Previous URL-based cover image")
     category = models.ForeignKey(
         Category,
         related_name="books",
@@ -48,7 +49,8 @@ class Book(TimeStampedModel):
 
 class Partner(TimeStampedModel):
     name = models.CharField(max_length=255)
-    logo = models.URLField(blank=True, null=True)
+    logo = models.ImageField(upload_to="partners/", blank=True, null=True)
+    legacy_logo_url = models.URLField(blank=True, null=True, help_text="Previous URL-based logo")
     website_url = models.URLField(blank=True, null=True)
 
     class Meta(TimeStampedModel.Meta):
@@ -61,7 +63,8 @@ class Partner(TimeStampedModel):
 class TeamMember(TimeStampedModel):
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=255)
-    photo = models.URLField(blank=True, null=True)
+    photo = models.ImageField(upload_to="team/", blank=True, null=True)
+    legacy_photo_url = models.URLField(blank=True, null=True, help_text="Previous URL-based photo")
 
     class Meta(TimeStampedModel.Meta):
         ordering = ["name"]

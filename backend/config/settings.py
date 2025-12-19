@@ -1,9 +1,14 @@
+import logging
 import os
 from pathlib import Path
 
 import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+logger = logging.getLogger(__name__)
 
 # Core settings
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change-me")
@@ -11,6 +16,8 @@ DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
 raw_hosts = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 ALLOWED_HOSTS = [host.strip() for host in raw_hosts if host.strip()]
+if DEBUG and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -57,22 +64,23 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
-database_url = os.getenv("DATABASE_URL")
-if database_url:
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=database_url,
-            conn_max_age=600,
-            ssl_require=False,
-        )
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+database_url = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+DATABASES = {
+    "default": dj_database_url.config(
+        default=database_url,
+        conn_max_age=600,
+        ssl_require=False,
+    )
+}
+
+db_settings = DATABASES.get("default", {})
+logger.info(
+    "Database backend configured: ENGINE=%s NAME=%s HOST=%s USER=%s",
+    db_settings.get("ENGINE"),
+    db_settings.get("NAME"),
+    db_settings.get("HOST"),
+    db_settings.get("USER"),
+)
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -89,8 +97,10 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

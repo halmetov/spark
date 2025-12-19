@@ -17,6 +17,13 @@ This project now uses a self-hosted PostgreSQL database exposed via a Django + D
    cp backend/.env.example backend/.env
    ```
    Update `DATABASE_URL`, `DJANGO_SECRET_KEY`, `CORS_ALLOWED_ORIGINS`, and hosts as needed.
+   On Windows PowerShell set env vars for the current session (example for Postgres):
+   ```pwsh
+   $env:DATABASE_URL="postgres://USER:PASSWORD@HOST:5432/DBNAME"
+   $env:DJANGO_SECRET_KEY="change-me"
+   $env:DJANGO_DEBUG="True"
+   $env:DJANGO_ALLOWED_HOSTS="localhost,127.0.0.1"
+   ```
 
 2. Install Python deps (inside a venv is recommended):
    ```sh
@@ -30,6 +37,10 @@ This project now uses a self-hosted PostgreSQL database exposed via a Django + D
    cd backend
    python manage.py migrate
    python manage.py createsuperuser
+   ```
+   To confirm which database Django is talking to:
+   ```sh
+   python manage.py print_db_info
    ```
 
 4. Run the server:
@@ -53,12 +64,13 @@ This project now uses a self-hosted PostgreSQL database exposed via a Django + D
    ```
 
 ## API endpoints
-All endpoints are public read-only under `/api/`:
-- `GET /api/books/` (optional `?category_id=<uuid>`)
-- `GET /api/books/<id>/`
-- `GET /api/categories/`
-- `GET /api/partners/`
-- `GET /api/team-members/`
+All endpoints are public under `/api/` and accept `multipart/form-data` for uploads:
+- `GET/POST/PUT/PATCH /api/books/` (optional `?category_id=<uuid>`)
+- `GET/POST/PUT/PATCH /api/partners/`
+- `GET/POST/PUT/PATCH /api/team-members/`
+- `GET /api/categories/` (read-only)
+
+Each object returns both the file field and a resolved `*_url` pointing to the image (absolute when `request` is provided).
 
 ## Docker Compose (optional)
 Run Postgres and the backend together:
@@ -81,6 +93,22 @@ Backend will listen on `8000`, Postgres on `5432`. Adjust env values in `docker-
    ```
    Adjust paths as needed. UUIDs from Supabase are preserved.
 4. Verify data in Django Admin and on the site (`npm run dev` + `python manage.py runserver`).
+
+## Verify PostgreSQL writes
+1. Ensure environment variables are loaded (e.g., via `.env` or PowerShell snippet above).
+2. Run the diagnostic command to confirm the active engine and database name:
+   ```sh
+   python manage.py print_db_info
+   ```
+3. Create or edit a record in Django Admin and then check PostgreSQL directly:
+   ```sh
+   psql "$DATABASE_URL" -c "SELECT id, title, cover_image FROM content_book ORDER BY created_at DESC LIMIT 5;"
+   ```
+   You should see the newly created row with an `cover_image` path pointing to `MEDIA_ROOT`.
+
+## Migrating legacy image URLs to local files
+- Existing URL fields are preserved in `legacy_cover_image_url`, `legacy_logo_url`, and `legacy_photo_url`.
+- For any row that still points to a remote URL, download the file into `backend/media/<model-folder>/` (e.g., `backend/media/books/`), set the corresponding `cover_image`/`logo`/`photo` in Admin, and clear the legacy URL if desired.
 
 ## Notes
 - Frontend design remains unchanged; only the data layer now targets the Django REST API.
