@@ -14,6 +14,8 @@ async function parseResponse<T>(response: Response): Promise<T> {
 
 export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
   const url = new URL(path, API_BASE_URL);
+  console.log("[apiGet] GET", url.toString());
   const response = await fetch(url.toString(), { signal });
+  console.log("[apiGet] Response", response.status, response.statusText);
   return parseResponse<T>(response);
 }
