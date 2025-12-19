@@ -1,73 +1,87 @@
-# Welcome to your Lovable project
+# Spark Library – Frontend + Django API
 
-## Project info
+This project now uses a self-hosted PostgreSQL database exposed via a Django + DRF backend. Supabase has been removed entirely; content is managed through Django Admin.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Contents
+- `backend/`: Django project (`config`) with a `content` app exposing read-only REST endpoints and an Admin UI for CRUD.
+- Frontend (Vite + React + TypeScript) consuming the REST API via `VITE_API_URL`.
 
-## How can I edit this code?
+## Prerequisites
+- Node.js 18+
+- Python 3.12+
+- PostgreSQL 15+ (local or container)
 
-There are several ways of editing your application.
+## Backend setup
+1. Copy env template:
+   ```sh
+   cp backend/.env.example backend/.env
+   ```
+   Update `DATABASE_URL`, `DJANGO_SECRET_KEY`, `CORS_ALLOWED_ORIGINS`, and hosts as needed.
 
-**Use Lovable**
+2. Install Python deps (inside a venv is recommended):
+   ```sh
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r backend/requirements.txt
+   ```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+3. Apply migrations and create an admin user:
+   ```sh
+   cd backend
+   python manage.py migrate
+   python manage.py createsuperuser
+   ```
 
-Changes made via Lovable will be committed automatically to this repo.
+4. Run the server:
+   ```sh
+   python manage.py runserver 0.0.0.0:8000
+   ```
 
-**Use your preferred IDE**
+5. Django Admin is at `http://localhost:8000/admin`.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Frontend setup
+1. Copy the env template:
+   ```sh
+   cp .env.example .env
+   ```
+   Make sure `VITE_API_URL` points to your Django server (default `http://localhost:8000`).
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. Install and run:
+   ```sh
+   npm install
+   npm run dev
+   ```
 
-Follow these steps:
+## API endpoints
+All endpoints are public read-only under `/api/`:
+- `GET /api/books/` (optional `?category_id=<uuid>`)
+- `GET /api/books/<id>/`
+- `GET /api/categories/`
+- `GET /api/partners/`
+- `GET /api/team-members/`
 
+## Docker Compose (optional)
+Run Postgres and the backend together:
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+docker-compose up --build
 ```
+Backend will listen on `8000`, Postgres on `5432`. Adjust env values in `docker-compose.yml` as needed.
 
-**Edit a file directly in GitHub**
+## Supabase ➜ PostgreSQL migration (one-time)
+1. In Supabase, export each table (`books`, `categories`, `partners`, `team_members`) to CSV.
+2. Prepare a PostgreSQL database that matches `DATABASE_URL` and ensure migrations have run.
+3. Import CSVs with `psql`:
+   ```sh
+   psql "$DATABASE_URL" <<'SQL'
+   \copy content_category(id, name, description, created_at, updated_at) FROM '/path/categories.csv' CSV HEADER;
+   \copy content_book(id, title, author, description, content, cover_image, category_id, created_at, updated_at) FROM '/path/books.csv' CSV HEADER;
+   \copy content_partner(id, name, logo, website_url, created_at, updated_at) FROM '/path/partners.csv' CSV HEADER;
+   \copy content_teammember(id, name, role, photo, created_at, updated_at) FROM '/path/team_members.csv' CSV HEADER;
+   SQL
+   ```
+   Adjust paths as needed. UUIDs from Supabase are preserved.
+4. Verify data in Django Admin and on the site (`npm run dev` + `python manage.py runserver`).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Notes
+- Frontend design remains unchanged; only the data layer now targets the Django REST API.
+- All content changes should be performed via Django Admin.

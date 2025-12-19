@@ -28,15 +28,6 @@ export interface TeamMember {
   updated_at: string;
 }
 
-export type AppRole = 'admin' | 'user';
-
-export interface UserRole {
-  id: string;
-  user_id: string;
-  role: AppRole;
-  created_at: string;
-}
-
 export interface Partner {
   id: string;
   name: string;
