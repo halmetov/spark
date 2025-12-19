@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cool Minimalist European Palette */
+    --background: 210 30% 99%;
+    --foreground: 220 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+
+    /* Cool blue primary */
+    --primary: 220 85% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Light ice secondary */
+    --secondary: 210 35% 96%;
+    --secondary-foreground: 220 25% 20%;
+
+    --muted: 210 25% 94%;
+    --muted-foreground: 220 15% 45%;
+
+    /* Soft lavender accent */
+    --accent: 245 60% 92%;
+    --accent-foreground: 245 50% 35%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 220 85% 55%;
+
+    --radius: 0.75rem;
+
+    /* Spark brand colors */
+    --spark-blue: 220 85% 55%;
+    --spark-ice: 200 40% 97%;
+    --spark-lavender: 245 60% 92%;
+    --spark-mint: 165 45% 92%;
+    --spark-coral: 15 85% 94%;
+    --spark-slate: 220 15% 50%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(210 35% 98%) 0%, hsl(220 40% 95%) 50%, hsl(245 40% 96%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 30% 98%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(220 85% 55%) 0%, hsl(245 70% 60%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(220 30% 30% / 0.08);
+    --shadow-card: 0 8px 30px -8px hsl(220 30% 30% / 0.1);
+    --shadow-elevated: 0 20px 50px -15px hsl(220 30% 30% / 0.15);
+
+    /* Sidebar */
+    --sidebar-background: 210 30% 98%;
+    --sidebar-foreground: 220 25% 20%;
+    --sidebar-primary: 220 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 245 60% 95%;
+    --sidebar-accent-foreground: 220 25% 20%;
+    --sidebar-border: 220 20% 92%;
+    --sidebar-ring: 220 85% 55%;
+  }
+
+  .dark {
+    --background: 222 30% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 25% 12%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 25% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 220 80% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 220 25% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 245 40% 25%;
+    --accent-foreground: 245 60% 85%;
+
+    --destructive: 0 65% 45%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 220 80% 60%;
+
+    --sidebar-background: 222 25% 10%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 220 80% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 18%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 220 80% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-card/70 backdrop-blur-xl border border-border/50;
+  }
+
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-lg rounded-2xl border border-border/40 shadow-[var(--shadow-card)];
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-foreground;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)];
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium 
+           transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground px-6 py-3 rounded-xl font-medium
+           border border-border transition-all duration-300 hover:bg-accent;
+  }
+
+  /* Book content styles for rich text */
+  .book-content p {
+    @apply mb-6 text-foreground/90;
+  }
+
+  .book-content h1 {
+    @apply text-3xl font-bold mb-6 mt-10 text-foreground;
+  }
+
+  .book-content h2 {
+    @apply text-2xl font-bold mb-4 mt-8 text-foreground;
+  }
+
+  .book-content h3 {
+    @apply text-xl font-semibold mb-3 mt-6 text-foreground;
+  }
+
+  .book-content ul, .book-content ol {
+    @apply mb-6 pl-6;
+  }
+
+  .book-content li {
+    @apply mb-2 text-foreground/90;
+  }
+
+  .book-content ul li {
+    @apply list-disc;
+  }
+
+  .book-content ol li {
+    @apply list-decimal;
+  }
+
+  .book-content strong {
+    @apply font-bold;
+  }
+
+  .book-content em {
+    @apply italic;
+  }
+
+  .book-content u {
+    @apply underline;
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
