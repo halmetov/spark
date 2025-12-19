@@ -11,12 +11,7 @@ import Genres from "./pages/Genres";
 import Partners from "./pages/Partners";
 import Team from "./pages/Team";
 import Contact from "./pages/Contact";
-import AdminLogin from "./pages/admin/AdminLogin";
-import Dashboard from "./pages/admin/Dashboard";
-import BooksManager from "./pages/admin/BooksManager";
-import CategoriesManager from "./pages/admin/CategoriesManager";
-import TeamManager from "./pages/admin/TeamManager";
-import PartnersManager from "./pages/admin/PartnersManager";
+import AdminInfo from "./pages/admin/AdminInfo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,12 +31,7 @@ const App = () => (
             <Route path="/partners" element={<Partners />} />
             <Route path="/team" element={<Team />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/books" element={<BooksManager />} />
-            <Route path="/admin/categories" element={<CategoriesManager />} />
-            <Route path="/admin/team" element={<TeamManager />} />
-            <Route path="/admin/partners" element={<PartnersManager />} />
+            <Route path="/admin/*" element={<AdminInfo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
