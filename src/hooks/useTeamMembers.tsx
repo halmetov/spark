@@ -6,7 +6,12 @@ export function useTeamMembers() {
   return useQuery({
     queryKey: ['team_members'],
     queryFn: async () => {
-      return apiGet<TeamMember[]>('/api/team-members/');
+      const data = await apiGet<TeamMember[] | { results?: TeamMember[] }>('/api/team-members/');
+      const items = Array.isArray(data) ? data : data.results ?? [];
+      return items.map((member) => ({
+        ...member,
+        photo: member.photo_url ?? member.photo ?? null,
+      }));
     },
   });
 }

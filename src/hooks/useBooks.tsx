@@ -13,7 +13,12 @@ export function useBooks(categoryId?: string) {
 
       const queryString = params.toString();
       const path = `/api/books/${queryString ? `?${queryString}` : ''}`;
-      return apiGet<Book[]>(path);
+      const data = await apiGet<Book[] | { results?: Book[] }>(path);
+      const items = Array.isArray(data) ? data : data.results ?? [];
+      return items.map((book) => ({
+        ...book,
+        cover_image: book.cover_image_url ?? book.cover_image ?? null,
+      }));
     },
   });
 }
@@ -23,7 +28,12 @@ export function useBook(id: string) {
     queryKey: ['book', id],
     queryFn: async () => {
       try {
-        return await apiGet<Book | null>(`/api/books/${id}/`);
+        const book = await apiGet<Book | null>(`/api/books/${id}/`);
+        if (!book) return null;
+        return {
+          ...book,
+          cover_image: book.cover_image_url ?? book.cover_image ?? null,
+        };
       } catch (error: any) {
         if (error?.status === 404) {
           return null;

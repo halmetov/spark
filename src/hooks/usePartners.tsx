@@ -6,7 +6,12 @@ export function usePartners() {
   return useQuery({
     queryKey: ['partners'],
     queryFn: async () => {
-      return apiGet<Partner[]>('/api/partners/');
+      const data = await apiGet<Partner[] | { results?: Partner[] }>('/api/partners/');
+      const items = Array.isArray(data) ? data : data.results ?? [];
+      return items.map((partner) => ({
+        ...partner,
+        logo: partner.logo_url ?? partner.logo ?? null,
+      }));
     },
   });
 }
